@@ -51,6 +51,38 @@ abrir macro archivo
     int 21h
 abrir endm
 
+escribir macro archivo
+pedir:
+  mov ah,01h
+  int 21h
+  mov vec[si],al
+  inc si
+  cmp al,0dh
+  ja pedir
+  jb pedir
+
+editar:
+;abrir el archivo
+mov ah,3dh
+mov al,1h ;Abrimos el archivo en solo escritura.
+mov dx,offset archivo
+int 21h
+jc salir ;Si hubo error
+
+;Escritura de archivo
+mov bx,ax ; mover hadfile
+mov cx,si ;num de caracteres a grabar
+mov dx,offset vec
+mov ah,40h
+int 21h
+imprime msjescr
+cmp cx,ax
+jne salir ;error salir
+mov ah,3eh  ;Cierre de archivo 
+int 21h
+jmp menu
+endm 
+
 
 .model small
 
@@ -122,39 +154,9 @@ call limpiar
 imprime msj7
 imprime msj8
 abrir nameCompra 
-
+escribir nameCompra
 ;seccion de codigo para editar el archivo
-pedir:
-  mov ah,01h
-  int 21h
-  mov vec[si],al
-  inc si
-  cmp al,0dh
-  ja pedir
-  jb pedir
-
-editar:
-;abrir el archivo
-mov ah,3dh
-mov al,1h ;Abrimos el archivo en solo escritura.
-mov dx,offset nameCompra
-int 21h
-jc salir ;Si hubo error
-
-;Escritura de archivo
-mov bx,ax ; mover hadfile
-mov cx,si ;num de caracteres a grabar
-mov dx,offset vec
-mov ah,40h
-int 21h
-imprime msjescr
-cmp cx,ax
-jne salir ;error salir
-mov ah,3eh  ;Cierre de archivo 
-int 21h
-jmp menu  
-
-
+ 
 inventario:
 
 venta:
